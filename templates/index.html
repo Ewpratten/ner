@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Not Enough Reviews</title>
+    <link rel="stylesheet" href="https://unpkg.com/wingcss" />
+
+    <style>
+        #home-greeter {
+            text-align: center;
+            margin-top: 35vh;
+        }
+
+        #home-repo-select {
+            max-width: 350px;
+            margin: auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-gap: 30px;
+            
+        }
+
+        h1,
+        h5 {
+            margin: 1rem;
+            padding: 0;
+        }
+
+        #madeby {
+            text-align: center;
+            position: fixed;
+            bottom: 0%;
+            width: 100vw;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="home-greeter">
+
+        <h1><strong>Not Enough Reviews</strong></h1>
+        <h5>Enter a GitHub repository below</h5>
+
+        <div id="home-repo-select">
+            <input type="text" placeholder="ewpratten/ner" id="repository-input" />
+            <button class="outline"
+                onclick="handleOpenRepository();">Open</button>
+        </div>
+
+    </div>
+
+    <div id="madeby">
+        <p>Made with ♥ by <a href="https://retrylife.ca">Evan Pratten</a></p>
+    </div>
+
+    <script>
+        function handleOpenRepository(){
+            // Get the user input
+            var userInput = document.getElementById('repository-input').value;
+
+            // If not repo specified, use my repo
+            if(userInput == ""){
+                userInput = "ewpratten/ner";
+            }
+
+            // Go to repo page
+            document.location = "/gh/" + userInput;
+        }
+    </script>
+
+</body>
+
+</html>

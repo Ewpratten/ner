@@ -15,6 +15,10 @@ CACHE_SECONDS = 60
 # Set up an app
 app = Webapp(__name__, static_directory="static", google_tracking_code=None)
 
+@app.errorhandler(404)
+def page_not_found(e):
+    return flask.render_template('404.html'), 404
+
 @app.route("/")
 def serveIndex() -> flask.Response:
     """Handles serving the index page
@@ -41,7 +45,7 @@ def serveRepoMainPage(org: str, repo: str) -> flask.Response:
     # Load the README file
     readme_source = requests.get(f"https://raw.githubusercontent.com/{repo_name}/master/README.md")
     if readme_source.status_code != 200:
-        readme_source_md = f"# Summary not available {repo_name}"
+        readme_source_md = f"# Summary not available for {repo_name}"
     else:
         readme_source_md = readme_source.text
 

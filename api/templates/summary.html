@@ -40,8 +40,9 @@
             min-height: 60vh;
             max-width: 1170px;
             margin: auto;
-            padding-left: 5.5rem;
-            padding-right: 5.5rem;
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
+            overflow: auto;
         }
 
         img{
@@ -53,9 +54,9 @@
 <body>
 
     <div class="nav">
-        <h5 class="nav-logo">NER::{{repo_name}}</h5>
+        <a href="/" style="text-decoration:none;"><h5 class="nav-logo">NER::{{repo_name}}</h5></a>
         <a class="nav-item" href="/gh/{{repo_name}}"><strong>about</strong></a>
-        <a class="nav-item" href="/gh/{{repo_name}}/log">log</a>
+        <a class="nav-item" href="/gh/{{repo_name}}/log">commit log</a>
         <a class="nav-item" href="/gh/{{repo_name}}/issues">issues</a>
         <a class="nav-item" href="/gh/{{repo_name}}/proposals">proposals</a>
         <a class="nav-item" href="/gh/{{repo_name}}/dashboard">dashboard</a>

@@ -2,6 +2,8 @@ import requests
 import re
 from typing import Generator
 from bs4 import BeautifulSoup
+import atoma
+
 
 def listAllIssueUrlsForRepo(repo_name: str, pull_request: bool=False, open: bool=True) -> Generator[dict, None, None]:
     """Makes a call to GitHub, and returns all issues
@@ -116,11 +118,16 @@ def getPullRequestMetadata(repo_name: str, id: int) -> dict:
     # Build a parser
     soup = BeautifulSoup(res.text, 'html.parser')
 
+    files_changed = 0
+    try:
+        files_changed = soup.find(id="files_tab_counter").contents[0]
+    except:
+        files_changed = 1
 
     return {
         "name": soup.find(class_="js-issue-title").contents[0],
         "commit_count": soup.find(class_="js-updateable-pull-request-commits-count").contents[0],
-        "files_changed": soup.find(id="files_tab_counter").contents[0],
+        "files_changed": files_changed,
         "author": soup.find_all(class_="timeline-comment-header")[0].find(class_="author").contents[0],
         "message": "".join([str(x) for x in soup.find(class_="js-comment-body").contents])
     }
@@ -151,6 +158,26 @@ def getIssueMetadata(repo_name: str, id: int) -> Generator[dict, None, None]:
 
     return
 
+def getListOfRecentCommits(repo_name: str) -> Generator[dict, None, None]:
+
+    # Fetch commit feed
+    commit_feed_raw = requests.get(f"https://github.com/{repo_name}/commits.atom")
+
+    # Turn into atom object
+    commit_feed = atoma.parse_atom_bytes(commit_feed_raw.content)
+
+    # Handle each entry
+    for commit in commit_feed.entries:
+        
+        # Build data output
+        yield {
+            "name": commit.title.value,
+            "author": commit.authors[0].name,
+            "date": commit.updated.strftime("%b %d, %Y"),
+            "number":commit.links[0].href.split("/")[-1]
+        }
+
+    return
 
 if __name__ == "__main__":
 

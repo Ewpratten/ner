@@ -5,9 +5,9 @@ import markdown2
 import requests
 
 from .validation import isValidGitHubRepo
-from .webscraper import listAllIssueUrlsForRepo, getPullRequestMetadata, getIssueMetadata
+from .webscraper import listAllIssueUrlsForRepo, getPullRequestMetadata, getIssueMetadata, getListOfRecentCommits
 from .diff2html import diff_prettyHtml
-from .utils import pullRequestToDiff
+from .utils import pullRequestToDiff, commitToPatch
 
 # Config
 CACHE_SECONDS = 60
@@ -66,9 +66,32 @@ def serveRepoCommitLog(org: str, repo: str) -> flask.Response:
     if not isValidGitHubRepo(repo_name):
         flask.abort(404)
 
+    # Get most recent commits
+    commits = list(getListOfRecentCommits(repo_name))
 
     # Build the template file
-    res = flask.make_response(flask.render_template("log.html", repo_name=repo_name))
+    res = flask.make_response(flask.render_template("log.html", repo_name=repo_name, commits=commits))
+    res.headers.set('Cache-Control', f"s-maxage={CACHE_SECONDS}, stale-while-revalidate")
+    return res
+
+@app.route("/gh/<org>/<repo>/commit/<id>")
+def serveRepoCommit(org: str, repo: str, id: int) -> flask.Response:
+
+    # Build repo name
+    repo_name = f"{org}/{repo}"
+
+    # If invalid, go to 404
+    if not isValidGitHubRepo(repo_name):
+        flask.abort(404)
+
+    # Get commit diff
+    patch = commitToPatch(repo_name, id)
+
+    # Build diff into HTML
+    patch_html = diff_prettyHtml(patch)
+
+    # Build the template file
+    res = flask.make_response(flask.render_template("commit.html", repo_name=repo_name, patch=patch_html, commit_id=id))
     res.headers.set('Cache-Control', f"s-maxage={CACHE_SECONDS}, stale-while-revalidate")
     return res
 
@@ -160,9 +183,42 @@ def serveRepoDashboard(org: str, repo: str) -> flask.Response:
     if not isValidGitHubRepo(repo_name):
         flask.abort(404)
 
+    # Build output data
+    all_data = {
+        "prs": [],
+        "issues": [],
+        "commits":[]
+    }
+
+    # Get all prs
+    all_data["prs"] += list(listAllIssueUrlsForRepo(repo_name, pull_request=True, open=True))
+    all_data["prs"] += list(listAllIssueUrlsForRepo(repo_name, pull_request=True, open=False))
+
+    # Get all issues
+    all_data["issues"] += list(listAllIssueUrlsForRepo(repo_name, pull_request=False, open=True))
+    all_data["issues"] += list(listAllIssueUrlsForRepo(repo_name, pull_request=False, open=False))
+
+    # Get all commits
+    all_data["commits"] += list(getListOfRecentCommits(repo_name))
+
+    # Make one large array combining all sources
+    combined_data = []
+    for pr in all_data["prs"]:
+        pr["url"] = f"/gh/{repo_name}/proposals/" + str(pr["number"])
+        combined_data.append(pr)
+    for issue in all_data["issues"]:
+        issue["url"] = f"/gh/{repo_name}/issue/" + str(issue["number"])
+        combined_data.append(issue)
+    for commit in all_data["commits"]:
+        commit["url"] = f"/gh/{repo_name}/commit/" + str(commit["number"])
+        commit["number"] = commit["number"][:14]
+        combined_data.append(commit)
+
+    combined_data.sort(key=lambda x: x["date"])
+    combined_data.reverse()
 
     # Build the template file
-    res = flask.make_response(flask.render_template("dashboard.html", repo_name=repo_name))
+    res = flask.make_response(flask.render_template("dashboard.html", repo_name=repo_name, events=combined_data))
     res.headers.set('Cache-Control', f"s-maxage={CACHE_SECONDS}, stale-while-revalidate")
     return res
 

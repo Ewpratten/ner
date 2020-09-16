@@ -90,7 +90,7 @@
             <tbody>
                 {% for event in events %}
                 <tr>
-                    <td><a href="/gh/{{repo_name}}/proposals/{{event["number"]}}">{{event["name"]}}</a></td>
+                    <td><a href="{{event["url"]}}">{{event["name"]}}</a></td>
                     <td>{{event["number"]}}</td>
                     <td><a href="https://github.com/{{event["author"]}}">{{event["author"]}}</a></td>
                     <td>{{event["date"]}}</td>

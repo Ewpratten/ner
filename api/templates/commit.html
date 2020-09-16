@@ -61,6 +61,7 @@
             padding: 0.5rem;
         }
     </style>
+
 </head>
 
 <body>
@@ -76,29 +77,13 @@
     </div>
 
     <div id="content">
-        <h1>Commit log</h1>
-        <p>The 20 most recent commits to {{repo_name}}. See them all on <a href="https://github.com/{{repo_name}}/commits">GitHub</a>.</p>
+        <h3><strong>Commit: {{commit_id}}</strong></h3>
+        <p><a href="https://github.com/{{repo_name}}/commit/{{commit_id}}">View on GitHub</a></p>
+        <hr>
 
-        <table>
-            <thead>
-                <tr>
-                    <td><strong>Title</strong></td>
-                    <td><strong>#</strong></td>
-                    <td><strong>Author</strong></td>
-                    <td><strong>Date</strong></td>
-                </tr>
-            </thead>
-            <tbody>
-                {% for commit in commits %}
-                <tr>
-                    <td><a href="/gh/{{repo_name}}/commit/{{commit["number"]}}">{{commit["name"]}}</a></td>
-                    <td>{{commit["number"][:14]}}</td>
-                    <td><a href="https://github.com/{{commit["author"]}}">{{commit["author"]}}</a></td>
-                    <td>{{commit["date"]}}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <pre id="diff">
+            {{patch|safe}}
+        </pre>
 
     </div>
 

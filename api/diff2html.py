@@ -16,7 +16,9 @@ def diff_prettyHtml(diff):
                 html.append("<span style=\"color:green;width:100%%;\">%s</span>" % text)
             elif text[0] == "-" :
                 html.append("<span style=\"color:red;width:100%%;\">%s</span>" % text)
-            elif text[0] == " " :
+            elif text[0] == " ":
                 html.append("<span>%s</span>" % text)
+            else:
+                html.append("<span><strong>%s</strong></span>" % text)
         
     return "\n"+"\n".join(html)

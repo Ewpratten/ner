@@ -10,7 +10,8 @@ from .diff2html import diff_prettyHtml
 from .utils import pullRequestToDiff, commitToPatch
 
 # Config
-CACHE_SECONDS = 60
+CACHE_SECONDS = 90
+LONG_CACHE_SECONDS = 120
 
 # Set up an app
 app = Webapp(__name__, static_directory="static", google_tracking_code=None)
@@ -243,7 +244,7 @@ def serveRepoDashboard(org: str, repo: str) -> flask.Response:
 
     # Build the template file
     res = flask.make_response(flask.render_template("dashboard.html", repo_name=repo_name, events=combined_data))
-    res.headers.set('Cache-Control', f"s-maxage={CACHE_SECONDS}, stale-while-revalidate")
+    res.headers.set('Cache-Control', f"s-maxage={LONG_CACHE_SECONDS}, stale-while-revalidate")
     return res
 
 if __name__ == "__main__":

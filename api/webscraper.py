@@ -92,6 +92,9 @@ def listAllIssueUrlsForRepo(repo_name: str, pull_request: bool=False, open: bool
                     "url": f"htttps://github.com/{repo_name}/{search_type}/{issue_number}"
                 }
 
+            # Add to known issues
+            known_issues.append(issue_number)
+
         # Break on duplicate page
         if is_duplicate:
             break

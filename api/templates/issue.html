@@ -44,8 +44,21 @@
             padding-right: 5.5rem;
         }
 
-        img{
+        img {
             max-width: 100%;
+        }
+
+        table {
+            width: 100%;
+        }
+
+        thead tr td {
+            background-color: #eee;
+            padding: 0.7rem;
+        }
+
+        td {
+            padding: 0.5rem;
         }
     </style>
 </head>
@@ -54,16 +67,28 @@
 
     <div class="nav">
         <h5 class="nav-logo">NER::{{repo_name}}</h5>
-        <a class="nav-item" href="/gh/{{repo_name}}"><strong>about</strong></a>
+        <a class="nav-item" href="/gh/{{repo_name}}">about</a>
         <a class="nav-item" href="/gh/{{repo_name}}/log">log</a>
-        <a class="nav-item" href="/gh/{{repo_name}}/issues">issues</a>
+        <a class="nav-item" href="/gh/{{repo_name}}/issues"><strong>issues</strong></a>
         <a class="nav-item" href="/gh/{{repo_name}}/proposals">proposals</a>
         <a class="nav-item" href="/gh/{{repo_name}}/dashboard">dashboard</a>
 
     </div>
 
     <div id="content">
-        {{readme|safe}}
+        <h1>{{messages[0]["name"]}}</h1>
+        <p><a href="https://github.com/{{repo_name}}/issues/{{issue_id}}">View on GitHub</a></p>
+
+        {% for message in messages %}
+        <hr>
+        <p><strong>From: </strong> <a href="https://github.com/{{message["author"]}}">{{message["author"]}}</a></p>
+        <p><strong>Date: </strong> {{message["date"]}}</p>
+        <p class="message">
+            {{message["message"]|safe}}
+        </p>
+        {% endfor %}
+
+
     </div>
 
     <div id="madeby">

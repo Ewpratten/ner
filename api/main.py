@@ -5,7 +5,7 @@ import markdown2
 import requests
 
 from .validation import isValidGitHubRepo
-from .webscraper import listAllIssueUrlsForRepo
+from .webscraper import listAllIssueUrlsForRepo, getPullRequestMetadata, getIssueMetadata
 from .diff2html import diff_prettyHtml
 from .utils import pullRequestToDiff
 
@@ -90,6 +90,24 @@ def serveRepoIssues(org: str, repo: str) -> flask.Response:
     res.headers.set('Cache-Control', f"s-maxage={CACHE_SECONDS}, stale-while-revalidate")
     return res
 
+@app.route("/gh/<org>/<repo>/issue/<id>")
+def serveRepoIssue(org: str, repo: str, id: int) -> flask.Response:
+
+    # Build repo name
+    repo_name = f"{org}/{repo}"
+
+    # If invalid, go to 404
+    if not isValidGitHubRepo(repo_name):
+        flask.abort(404)
+
+    # Get issue data
+    issue_data = list(getIssueMetadata(repo_name, id))
+
+    # Build the template file
+    res = flask.make_response(flask.render_template("issue.html", repo_name=repo_name, messages = issue_data, issue_id=id))
+    res.headers.set('Cache-Control', f"s-maxage={CACHE_SECONDS}, stale-while-revalidate")
+    return res
+
 @app.route("/gh/<org>/<repo>/proposals")
 def serveRepoProposals(org: str, repo: str) -> flask.Response:
 
@@ -119,7 +137,7 @@ def serveRepoProposal(org: str, repo: str, id: int) -> flask.Response:
         flask.abort(404)
 
     # Get proposal data
-    # TODO
+    metadata = getPullRequestMetadata(repo_name, id)
 
     # Get proposal diff
     diff = pullRequestToDiff(repo_name, id)
@@ -128,10 +146,25 @@ def serveRepoProposal(org: str, repo: str, id: int) -> flask.Response:
     diff_html = diff_prettyHtml(diff)
 
     # Build the template file
-    res = flask.make_response(flask.render_template("proposal.html", repo_name=repo_name, diff=diff_html))
+    res = flask.make_response(flask.render_template("proposal.html", repo_name=repo_name, diff=diff_html, metadata=metadata, pull_id=id))
     res.headers.set('Cache-Control', f"s-maxage={CACHE_SECONDS}, stale-while-revalidate")
     return res
 
+@app.route("/gh/<org>/<repo>/dashboard")
+def serveRepoDashboard(org: str, repo: str) -> flask.Response:
+
+    # Build repo name
+    repo_name = f"{org}/{repo}"
+
+    # If invalid, go to 404
+    if not isValidGitHubRepo(repo_name):
+        flask.abort(404)
+
+
+    # Build the template file
+    res = flask.make_response(flask.render_template("dashboard.html", repo_name=repo_name))
+    res.headers.set('Cache-Control', f"s-maxage={CACHE_SECONDS}, stale-while-revalidate")
+    return res
 
 if __name__ == "__main__":
     app.run(debug=True)

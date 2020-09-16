@@ -104,6 +104,53 @@ def listAllIssueUrlsForRepo(repo_name: str, pull_request: bool=False, open: bool
         
     return
 
+def getPullRequestMetadata(repo_name: str, id: int) -> dict:
+
+    # Make web request
+    res = requests.get(f"https://github.com/{repo_name}/pull/{id}")
+
+    # If the request fails, return
+    if res.status_code != 200:
+        return
+
+    # Build a parser
+    soup = BeautifulSoup(res.text, 'html.parser')
+
+
+    return {
+        "name": soup.find(class_="js-issue-title").contents[0],
+        "commit_count": soup.find(class_="js-updateable-pull-request-commits-count").contents[0],
+        "files_changed": soup.find(id="files_tab_counter").contents[0],
+        "author": soup.find_all(class_="timeline-comment-header")[0].find(class_="author").contents[0],
+        "message": "".join([str(x) for x in soup.find(class_="js-comment-body").contents])
+    }
+
+def getIssueMetadata(repo_name: str, id: int) -> Generator[dict, None, None]:
+
+     # Make web request
+    res = requests.get(f"https://github.com/{repo_name}/issues/{id}")
+
+    # If the request fails, return
+    if res.status_code != 200:
+        return
+
+    # Build a parser
+    soup = BeautifulSoup(res.text, 'html.parser')
+
+    # Get all messages
+    all_messages = soup.find_all(class_="timeline-comment")
+
+    # Handle every message
+    for message in all_messages:
+        yield {
+            "name": soup.find(class_="js-issue-title").contents[0],
+            "author": message.find(class_="author").contents[0],
+            "date": message.find("relative-time").contents[0],
+            "message": "".join([str(x) for x in message.find(class_="comment-body").contents])
+        }
+
+    return
+
 
 if __name__ == "__main__":
 

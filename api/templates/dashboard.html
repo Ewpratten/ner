@@ -44,8 +44,21 @@
             padding-right: 5.5rem;
         }
 
-        img{
+        img {
             max-width: 100%;
+        }
+
+        table {
+            width: 100%;
+        }
+
+        thead tr td {
+            background-color: #eee;
+            padding: 0.7rem;
+        }
+
+        td {
+            padding: 0.5rem;
         }
     </style>
 </head>
@@ -54,16 +67,38 @@
 
     <div class="nav">
         <h5 class="nav-logo">NER::{{repo_name}}</h5>
-        <a class="nav-item" href="/gh/{{repo_name}}"><strong>about</strong></a>
+        <a class="nav-item" href="/gh/{{repo_name}}">about</a>
         <a class="nav-item" href="/gh/{{repo_name}}/log">log</a>
         <a class="nav-item" href="/gh/{{repo_name}}/issues">issues</a>
         <a class="nav-item" href="/gh/{{repo_name}}/proposals">proposals</a>
-        <a class="nav-item" href="/gh/{{repo_name}}/dashboard">dashboard</a>
-
+        <a class="nav-item" href="/gh/{{repo_name}}/dashboard"><strong>dashboard</strong></a>
     </div>
 
     <div id="content">
-        {{readme|safe}}
+        <h1>{{repo_name}} Dashboard</h1>
+        <p>This page tracks the real-time status of {{repo_name}}</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <td><strong>title</strong></td>
+                    <td><strong>#</strong></td>
+                    <td><strong>Author</strong></td>
+                    <td><strong>Date</strong></td>
+                </tr>
+            </thead>
+            <tbody>
+                {% for event in events %}
+                <tr>
+                    <td><a href="/gh/{{repo_name}}/proposals/{{event["number"]}}">{{event["name"]}}</a></td>
+                    <td>{{event["number"]}}</td>
+                    <td><a href="https://github.com/{{event["author"]}}">{{event["author"]}}</a></td>
+                    <td>{{event["date"]}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
     </div>
 
     <div id="madeby">

@@ -71,6 +71,8 @@
         <a class="nav-item" href="/gh/{{repo_name}}/log">log</a>
         <a class="nav-item" href="/gh/{{repo_name}}/issues"><strong>issues</strong></a>
         <a class="nav-item" href="/gh/{{repo_name}}/proposals">proposals</a>
+        <a class="nav-item" href="/gh/{{repo_name}}/dashboard">dashboard</a>
+
     </div>
 
     <div id="content">
@@ -88,7 +90,7 @@
             <tbody>
                 {% for issue in issues %}
                 <tr>
-                    <td><a href="./{{issue["number"]}}">{{issue["name"]}}</a></td>
+                    <td><a href="/gh/{{repo_name}}/issue/{{issue["number"]}}">{{issue["name"]}}</a></td>
                     <td>{{issue["number"]}}</td>
                     <td><a href="https://github.com/{{issue["author"]}}">{{issue["author"]}}</a></td>
                     <td>{{issue["date"]}}</td>

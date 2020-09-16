@@ -5,13 +5,13 @@ from bs4 import BeautifulSoup
 import atoma
 
 
-def listAllIssueUrlsForRepo(repo_name: str, pull_request: bool=False, open: bool=True) -> Generator[dict, None, None]:
+def listAllIssueUrlsForRepo(repo_name: str, pull_request: bool=False, is_open: bool=True) -> Generator[dict, None, None]:
     """Makes a call to GitHub, and returns all issues
 
     Args:
         repo_name (str): Name of repo
         pull_request [bool]: Pull requests or issues?
-        open [bool]: Open issues or closed issues?
+        is_open [bool]: Open issues or closed issues?
 
     Yields:
         Generator[str, None, None]: All issues
@@ -29,7 +29,7 @@ def listAllIssueUrlsForRepo(repo_name: str, pull_request: bool=False, open: bool
         searchid += "pr+is%3A"
     else:
         searchid += "issue+is%3A"
-    if open:
+    if is_open:
         searchid += "open+sort%3Aupdated-desc"
     else:
         searchid += "closed+sort%3Aupdated-desc"
@@ -91,7 +91,8 @@ def listAllIssueUrlsForRepo(repo_name: str, pull_request: bool=False, open: bool
                     "number": int(issue_number),
                     "author": issue_author,
                     "date": issue_date,
-                    "url": f"htttps://github.com/{repo_name}/{search_type}/{issue_number}"
+                    "url": f"htttps://github.com/{repo_name}/{search_type}/{issue_number}",
+                    "open": is_open
                 }
 
             # Add to known issues

@@ -54,12 +54,16 @@
         }
 
         thead tr td {
-            background-color: #eee;
+            background-color: #ccc;
             padding: 0.7rem;
         }
 
         td {
             padding: 0.5rem;
+        }
+
+        .grayed{
+            background-color: #efefef;
         }
     </style>
 </head>
@@ -90,7 +94,7 @@
             </thead>
             <tbody>
                 {% for proposal in proposals %}
-                <tr>
+                <tr {% if not proposal["open"] %}class="grayed"{% endif %}>
                     <td><a href="/gh/{{repo_name}}/proposals/{{proposal["number"]}}">{{proposal["name"]}}</a></td>
                     <td>{{proposal["number"]}}</td>
                     <td><a href="https://github.com/{{proposal["author"]}}">{{proposal["author"]}}</a></td>

@@ -110,7 +110,9 @@ def serveRepoIssues(org: str, repo: str) -> flask.Response:
         flask.abort(404)
 
     # Get all issues
-    all_issues = list(listAllIssueUrlsForRepo(repo_name))
+    all_issues = []
+    all_issues += list(listAllIssueUrlsForRepo(repo_name))
+    all_issues += list(listAllIssueUrlsForRepo(repo_name, is_open=False))
 
     # Build the template file
     res = flask.make_response(flask.render_template("issues.html", repo_name=repo_name, issues=all_issues))
@@ -146,7 +148,9 @@ def serveRepoProposals(org: str, repo: str) -> flask.Response:
         flask.abort(404)
 
     # Get all issues
-    all_issues = list(listAllIssueUrlsForRepo(repo_name, pull_request=True))
+    all_issues = []
+    all_issues += list(listAllIssueUrlsForRepo(repo_name, pull_request=True))
+    all_issues += list(listAllIssueUrlsForRepo(repo_name, pull_request=True, is_open=False))
 
     # Build the template file
     res = flask.make_response(flask.render_template("proposals.html", repo_name=repo_name, proposals=all_issues))
@@ -177,6 +181,21 @@ def serveRepoProposal(org: str, repo: str, id: int) -> flask.Response:
     res.headers.set('Cache-Control', f"s-maxage={CACHE_SECONDS}, stale-while-revalidate")
     return res
 
+_months = {
+    "Jan": 1,
+    "Feb": 2,
+    "Mar": 3,
+    "Apr": 4,
+    "May": 5,
+    "Jun": 6,
+    "Jul": 7,
+    "Aug": 8,
+    "Sep": 9,
+    "Oct": 10,
+    "Nov": 11,
+    "Dec": 12
+}
+
 @app.route("/gh/<org>/<repo>/dashboard")
 def serveRepoDashboard(org: str, repo: str) -> flask.Response:
 
@@ -195,12 +214,12 @@ def serveRepoDashboard(org: str, repo: str) -> flask.Response:
     }
 
     # Get all prs
-    all_data["prs"] += list(listAllIssueUrlsForRepo(repo_name, pull_request=True, open=True))
-    all_data["prs"] += list(listAllIssueUrlsForRepo(repo_name, pull_request=True, open=False))
+    all_data["prs"] += list(listAllIssueUrlsForRepo(repo_name, pull_request=True, is_open=True))
+    all_data["prs"] += list(listAllIssueUrlsForRepo(repo_name, pull_request=True, is_open=False))
 
     # Get all issues
-    all_data["issues"] += list(listAllIssueUrlsForRepo(repo_name, pull_request=False, open=True))
-    all_data["issues"] += list(listAllIssueUrlsForRepo(repo_name, pull_request=False, open=False))
+    all_data["issues"] += list(listAllIssueUrlsForRepo(repo_name, pull_request=False, is_open=True))
+    all_data["issues"] += list(listAllIssueUrlsForRepo(repo_name, pull_request=False, is_open=False))
 
     # Get all commits
     all_data["commits"] += list(getListOfRecentCommits(repo_name))
@@ -218,7 +237,8 @@ def serveRepoDashboard(org: str, repo: str) -> flask.Response:
         commit["number"] = commit["number"][:14]
         combined_data.append(commit)
 
-    combined_data.sort(key=lambda x: x["date"])
+    # Sort date strings
+    combined_data.sort(key=lambda x: (int(x["date"].split(" ")[-1]) * 100) + _months[x["date"].split(" ")[0]])
     combined_data.reverse()
 
     # Build the template file

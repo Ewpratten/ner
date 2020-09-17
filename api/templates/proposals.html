@@ -1,115 +1,26 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends 'base.html' %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{repo_name}} | Not Enough Reviews</title>
-    <link rel="stylesheet" href="https://unpkg.com/wingcss" />
+{% block content %}
+<h1>Proposals</h1>
 
-    <style>
-        #home-greeter {
-            text-align: center;
-            margin-top: 35vh;
-        }
-
-        #home-repo-select {
-            max-width: 350px;
-            margin: auto;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            grid-gap: 30px;
-
-        }
-
-        h1,
-        h5 {
-            margin: 1rem;
-            padding: 0;
-        }
-
-        #madeby {
-            text-align: center;
-        }
-
-        .nav-item {
-            padding: 1rem 0.5rem !important;
-        }
-
-        #content {
-            min-height: 60vh;
-            max-width: 1170px;
-            margin: auto;
-            padding-left: 0.5rem;
-            padding-right: 0.5rem;
-        }
-
-        img {
-            max-width: 100%;
-        }
-
-        table {
-            width: 100%;
-            overflow:scroll;
-        }
-
-        thead tr td {
-            background-color: #ccc;
-            padding: 0.7rem;
-        }
-
-        td {
-            padding: 0.5rem;
-        }
-
-        .grayed{
-            background-color: #efefef;
-        }
-    </style>
-</head>
-
-<body>
-
-    <div class="nav">
-        <a href="/" style="text-decoration:none;"><h5 class="nav-logo">NER::{{repo_name}}</h5></a>
-        <a class="nav-item" href="/gh/{{repo_name}}">about</a>
-        <a class="nav-item" href="/gh/{{repo_name}}/log">commit log</a>
-        <a class="nav-item" href="/gh/{{repo_name}}/issues">issues</a>
-        <a class="nav-item" href="/gh/{{repo_name}}/proposals"><strong>proposals</strong></a>
-        <a class="nav-item" href="/gh/{{repo_name}}/dashboard">dashboard</a>
-
-    </div>
-
-    <div id="content">
-        <h1>Proposals</h1>
-
-        <table>
-            <thead>
-                <tr>
-                    <td><strong>Title</strong></td>
-                    <td><strong>#</strong></td>
-                    <td><strong>Author</strong></td>
-                    <td><strong>Date</strong></td>
-                </tr>
-            </thead>
-            <tbody>
-                {% for proposal in proposals %}
-                <tr {% if not proposal["open"] %}class="grayed"{% endif %}>
-                    <td><a href="/gh/{{repo_name}}/proposals/{{proposal["number"]}}">{{proposal["name"]}}</a></td>
-                    <td>{{proposal["number"]}}</td>
-                    <td><a href="https://github.com/{{proposal["author"]}}">{{proposal["author"]}}</a></td>
-                    <td>{{proposal["date"]}}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-
-    </div>
-
-    <div id="madeby">
-        <p>Made with ♥ by <a href="https://retrylife.ca">Evan Pratten</a></p>
-    </div>
-
-</body>
-
-</html>
+<table>
+    <thead>
+        <tr>
+            <td><strong>Title</strong></td>
+            <td><strong>#</strong></td>
+            <td><strong>Author</strong></td>
+            <td><strong>Date</strong></td>
+        </tr>
+    </thead>
+    <tbody>
+        {% for proposal in proposals %}
+        <tr {% if not proposal["open"] %}class="grayed" {% endif %}>
+            <td><a href="/gh/{{repo_name}}/proposals/{{proposal["number"]}}">{{proposal["name"]}}</a></td>
+            <td>{{proposal["number"]}}</td>
+            <td><a href="https://github.com/{{proposal["author"]}}">{{proposal["author"]}}</a></td>
+            <td>{{proposal["date"]}}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

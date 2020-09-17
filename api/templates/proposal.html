@@ -1,111 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends 'base.html' %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{repo_name}} | Not Enough Reviews</title>
-    <link rel="stylesheet" href="https://unpkg.com/wingcss" />
+{% block content %}
+<h3><strong>{{metadata["name"]}}</strong></h3>
+<p style="margin:0px;">Written by: <a href="https://github.com/{{metadata["author"]}}">{{metadata["author"]}}</a> |
+    Files changed:
+    {{metadata["files_changed"]}} | Commits: {{metadata["commit_count"]}} | <a
+        href="https://github.com/{{repo_name}}/pull/{{pull_id}}/checks">CI Status</a> | <a
+        href="https://github.com/{{repo_name}}/pull/{{pull_id}}">View on GitHub</a></p>
+<hr>
 
-    <style>
-        #home-greeter {
-            text-align: center;
-            margin-top: 35vh;
-        }
+<p class="message">{{metadata["message"]|safe}}</p>
 
-        #home-repo-select {
-            max-width: 350px;
-            margin: auto;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            grid-gap: 30px;
+<hr>
 
-        }
+<pre id="diff">
+{{diff|safe}}
+</pre>
 
-        h1,
-        h5 {
-            margin: 1rem;
-            padding: 0;
-        }
-
-        #madeby {
-            text-align: center;
-        }
-
-        .nav-item {
-            padding: 1rem 0.5rem !important;
-        }
-
-        #content {
-            min-height: 60vh;
-            max-width: 1170px;
-            margin: auto;
-            padding-left: 0.5rem;
-            padding-right: 0.5rem;
-        }
-
-        img {
-            max-width: 100%;
-        }
-
-        table {
-            width: 100%;
-        }
-
-        thead tr td {
-            background-color: #eee;
-            padding: 0.7rem;
-        }
-
-        td {
-            padding: 0.5rem;
-        }
-
-        #diff, .message {
-            max-width: 100%;
-            overflow: auto;
-        }
-    </style>
-
-</head>
-
-<body>
-
-    <div class="nav">
-        <a href="/" style="text-decoration:none;">
-            <h5 class="nav-logo">NER::{{repo_name}}</h5>
-        </a>
-        <a class="nav-item" href="/gh/{{repo_name}}">about</a>
-        <a class="nav-item" href="/gh/{{repo_name}}/log">commit log</a>
-        <a class="nav-item" href="/gh/{{repo_name}}/issues">issues</a>
-        <a class="nav-item" href="/gh/{{repo_name}}/proposals"><strong>proposals</strong></a>
-        <a class="nav-item" href="/gh/{{repo_name}}/dashboard">dashboard</a>
-
-    </div>
-
-    <div id="content">
-        <h3><strong>{{metadata["name"]}}</strong></h3>
-        <p style="margin:0px;">Written by: <a
-                href="https://github.com/{{metadata["author"]}}">{{metadata["author"]}}</a> | Files changed:
-            {{metadata["files_changed"]}} | Commits: {{metadata["commit_count"]}} | <a
-                href="https://github.com/{{repo_name}}/pull/{{pull_id}}/checks">CI Status</a> | <a
-                href="https://github.com/{{repo_name}}/pull/{{pull_id}}">View on GitHub</a></p>
-        <hr>
-
-        <p class="message">{{metadata["message"]|safe}}</p>
-
-        <hr>
-
-        <pre id="diff">
-            {{diff|safe}}
-        </pre>
-
-    </div>
-
-    <div id="madeby">
-        <p>Made with ♥ by <a href="https://retrylife.ca">Evan Pratten</a></p>
-    </div>
-
-</body>
-
-</html>
+{% endblock %}
